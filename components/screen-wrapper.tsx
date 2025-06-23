@@ -5,10 +5,15 @@ import { colors } from "@/constants/theme";
 const { height } = Dimensions.get("window");
 
 const ScreenWrapper = ({ style, children }: ScreenWrapperProps) => {
-  let paddingTop = Platform.OS === "ios" ? height * 0.06 : 50;
+  let paddingTop = Platform.OS === "ios" ? height * 0.06 : 10;
 
   return (
-    <View style={[{ flex: 1, backgroundColor: colors.neutral900 }, style]}>
+    <View
+      style={[
+        { flex: 1, paddingTop, backgroundColor: colors.neutral900 },
+        style,
+      ]}
+    >
       <StatusBar barStyle="light-content" backgroundColor={colors.neutral900} />
       {children}
     </View>
