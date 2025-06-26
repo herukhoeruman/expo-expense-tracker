@@ -5,6 +5,7 @@ import Typo from "@/components/typo";
 import { signOut } from "firebase/auth";
 import { auth } from "@/config/firebase";
 import { useAuth } from "@/context/authContext";
+import ScreenWrapper from "@/components/screen-wrapper";
 
 const Home = () => {
   const { user } = useAuth();
@@ -14,11 +15,12 @@ const Home = () => {
   };
 
   return (
-    <View>
+    <ScreenWrapper>
+      <Typo>Home</Typo>
       <Button onPress={handleLogout}>
         <Typo color="black">Logout</Typo>
       </Button>
-    </View>
+    </ScreenWrapper>
   );
 };
 
