@@ -5,11 +5,11 @@ import { router } from "expo-router";
 import { colors } from "@/constants/theme";
 
 const Index = () => {
-  useEffect(() => {
-    setTimeout(() => {
-      router.push("/(auth)/welcome");
-    }, 2000);
-  }, []);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     router.push("/(auth)/welcome");
+  //   }, 2000);
+  // }, []);
 
   return (
     <View

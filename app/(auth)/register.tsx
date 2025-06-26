@@ -16,22 +16,34 @@ import { At, Lock, User } from "phosphor-react-native";
 import { useRef, useState } from "react";
 import Button from "@/components/button";
 import { router } from "expo-router";
+import { useAuth } from "@/context/authContext";
 
 const Register = () => {
   const [isLoading, setIsLoading] = useState(false);
   const emailRef = useRef("");
   const passwordRef = useRef("");
   const nameRef = useRef("");
+  const { register } = useAuth();
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!emailRef.current || !passwordRef.current || !nameRef.current) {
       Alert.alert("Login", "Please fill in all fields.");
       return;
     }
 
-    console.log("Email:", emailRef.current);
-    console.log("Password:", passwordRef.current);
-    console.log("Name:", nameRef.current);
+    setIsLoading(true);
+    const res = await register(
+      emailRef.current,
+      passwordRef.current,
+      nameRef.current
+    );
+
+    console.log("Register response:", res);
+
+    setIsLoading(false);
+    if (!res.success) {
+      Alert.alert("Registration Failed", res.msg);
+    }
   };
 
   return (
