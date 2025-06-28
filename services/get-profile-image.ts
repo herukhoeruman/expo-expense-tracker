@@ -9,6 +9,13 @@ export const getProfileImage = (file: any) => {
   return require("@/assets/images/defaultAvatar.png");
 };
 
+export const getFilePath = (file: any) => {
+  if (file && typeof file === "string") return file;
+  if (file && typeof file === "object") return file.uri;
+
+  return null;
+};
+
 export const uploadFileToCloudinary = async (
   file: { uri?: string } | string,
   folderName: string
