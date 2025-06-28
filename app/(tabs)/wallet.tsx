@@ -1,4 +1,10 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React from "react";
 import ScreenWrapper from "@/components/screen-wrapper";
 import { colors, radius, spacingY } from "@/constants/theme";
@@ -6,10 +12,36 @@ import { verticalScale } from "@/utils/styling";
 import Typo from "@/components/typo";
 import { router } from "expo-router";
 import * as Icons from "phosphor-react-native";
+import useFetchData from "@/hooks/useFetchData";
+import { WalletType } from "@/types";
+import { orderBy, where } from "firebase/firestore";
+import { useAuth } from "@/context/authContext";
+import Loading from "@/components/loading";
+import WalletListItem from "@/components/wallet-list-item";
 
 const Wallet = () => {
-  const getTotalBalance = async () => {
-    return 1234;
+  const { user } = useAuth();
+  const {
+    data: wallets,
+    isLoading,
+    error,
+  } = useFetchData<WalletType>("wallets", [
+    where("uid", "==", user?.uid),
+    orderBy("created", "desc"),
+  ]);
+
+  const getTotalBalance = () => {
+    return wallets.reduce((total, item) => {
+      total = total + (item.amount || 0);
+      return total;
+    }, 0);
+  };
+
+  const convertToRupiah = (amount: number) => {
+    return amount.toLocaleString("id-ID", {
+      style: "currency",
+      currency: "IDR",
+    });
   };
 
   return (
@@ -18,8 +50,8 @@ const Wallet = () => {
         {/* balance view */}
         <View style={styles.balanceView}>
           <View style={{ alignItems: "center" }}>
-            <Typo size={45} fontWeight={500}>
-              {getTotalBalance()}
+            <Typo size={35} fontWeight={500}>
+              {convertToRupiah(getTotalBalance())}
             </Typo>
             <Typo size={16} color={colors.neutral300}>
               Total Balance
@@ -44,6 +76,23 @@ const Wallet = () => {
               />
             </TouchableOpacity>
           </View>
+
+          {isLoading && <Loading />}
+
+          <FlatList
+            data={wallets}
+            renderItem={({ item, index }) => {
+              return (
+                <WalletListItem
+                  key={item.id}
+                  item={item}
+                  index={index}
+                  router={router}
+                />
+              );
+            }}
+            contentContainerStyle={styles.listStyle}
+          />
         </View>
       </View>
     </ScreenWrapper>
