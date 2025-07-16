@@ -5,7 +5,7 @@ import { colors } from "@/constants/theme";
 const { height } = Dimensions.get("window");
 
 const ScreenWrapper = ({ style, children }: ScreenWrapperProps) => {
-  let paddingTop = Platform.OS === "ios" ? height * 0.06 : 10;
+  let paddingTop = Platform.OS === "ios" ? height * 0.06 : 0;
 
   return (
     <View
