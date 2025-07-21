@@ -1,11 +1,4 @@
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import React from "react";
+import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import Button from "@/components/button";
 import Typo from "@/components/typo";
 import { signOut } from "firebase/auth";
@@ -18,9 +11,22 @@ import * as Icons from "phosphor-react-native";
 import HomeCard from "@/components/home-card";
 import TransactionList from "@/components/transaction-list";
 import { router } from "expo-router";
+import useFetchData from "@/hooks/useFetchData";
+import { TransactionType } from "@/types";
+import { limit, orderBy, where } from "firebase/firestore";
 
 const Home = () => {
   const { user } = useAuth();
+
+  const {
+    data: transactions,
+    isLoading: transactionsLoading,
+    error,
+  } = useFetchData<TransactionType>("transactions", [
+    where("uid", "==", user?.uid),
+    orderBy("date", "desc"),
+    limit(30),
+  ]);
 
   const handleLogout = async () => {
     await signOut(auth);
@@ -57,8 +63,8 @@ const Home = () => {
           </View>
 
           <TransactionList
-            data={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
-            loading={false}
+            data={transactions}
+            loading={transactionsLoading}
             emptyListMessage="No transactions added yet!"
             title="Recent Transactions"
           />
