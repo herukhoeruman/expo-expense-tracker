@@ -6,7 +6,7 @@ import {
   StyleSheet,
   View,
 } from "react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { colors, radius, spacingX, spacingY } from "@/constants/theme";
 import { scale, verticalScale } from "@/utils/styling";
 import ModalWrapper from "@/components/modal-wrapper";
@@ -29,6 +29,18 @@ import DateTimePicker, {
 } from "@react-native-community/datetimepicker";
 import Input from "@/components/input";
 import { createOrUpdateTransaction } from "@/services/transaction-service";
+
+type ParamType = {
+  id: string;
+  type: string;
+  amount: string;
+  category?: string;
+  date: string;
+  description?: string;
+  image?: any;
+  walletId: string;
+  uid?: string;
+};
 
 const TransactionModal = () => {
   const { user } = useAuth();
@@ -53,22 +65,22 @@ const TransactionModal = () => {
     orderBy("created", "desc"),
   ]);
 
-  const oldTransaction: { name: string; image: string; id: string } =
-    useLocalSearchParams();
+  const oldTransaction: ParamType = useLocalSearchParams();
 
-  // useEffect(() => {
-  //   if (oldTransaction?.id) {
-  //     setTransaction({
-  //       type: oldTransaction.type || "expense",
-  //       amount: oldTransaction.amount || 0,
-  //       description: oldTransaction.description || "",
-  //       category: oldTransaction.category || "",
-  //       date: oldTransaction.date ? new Date(oldTransaction.date) : new Date(),
-  //       walletId: oldTransaction.walletId || "",
-  //       image: oldTransaction.image || null,
-  //     });
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (oldTransaction?.id) {
+      setTransaction({
+        type: oldTransaction.type,
+        amount: Number(oldTransaction.amount),
+        category: oldTransaction.category || "",
+        date: new Date(oldTransaction.date),
+        description: oldTransaction.description || "",
+        image: oldTransaction.image || null,
+        walletId: oldTransaction.walletId,
+        // uid: oldTransaction.uid || user?.uid || "",
+      });
+    }
+  }, []);
 
   const onSubmit = async () => {
     const { type, amount, description, category, date, walletId, image } =
@@ -90,7 +102,9 @@ const TransactionModal = () => {
       uid: user?.uid || "",
     };
 
-    // todo: handle update transaction id
+    // include id if editing
+    if (oldTransaction?.id) transactionData.id = oldTransaction.id;
+
     setIsLoading(true);
     const res = await createOrUpdateTransaction(transactionData);
     setIsLoading(false);
@@ -272,9 +286,9 @@ const TransactionModal = () => {
             {showDatePicker && (
               <View>
                 <DateTimePicker
-                  themeVariant="dark"
+                  // themeVariant="dark"
                   value={transaction.date as Date}
-                  textColor="white"
+                  // textColor="white"
                   mode="date"
                   display="calendar"
                   onChange={onDateChange}
